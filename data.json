@@ -1,0 +1,50 @@
+{
+    "531549452": {
+        "name": "Ost Tom \u2719",
+        "expenses": {
+            "Home": [
+                {
+                    "category": "Home",
+                    "title": "Chair",
+                    "amount": 52.0,
+                    "date": "2024-02-10"
+                },
+                {
+                    "category": "Home",
+                    "title": "Dishwasher",
+                    "amount": 2352.0,
+                    "date": "2024-03-15"
+                }
+            ],
+            "Utilities": [
+                {
+                    "category": "Utilities",
+                    "title": "Light",
+                    "amount": 850.0,
+                    "date": "2024-04-20"
+                }
+            ]
+        },
+        "incomes": {
+            "Work": [
+                {
+                    "category": "Work",
+                    "amount": 42500.0,
+                    "date": "2024-04-06"
+                },
+                {
+                    "category": "Work",
+                    "amount": 42500.0,
+                    "date": "2023-03-06"
+                }
+            ],
+            "Invest": [
+                {
+                    "category": "Invest",
+                    "amount": 6000.0,
+                    "date": "2024-04-21"
+                }
+            ]
+        }
+    }
+}
