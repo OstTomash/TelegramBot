@@ -24,6 +24,16 @@ from .text_handlers import user_exist_decorator
 
 @user_exist_decorator
 async def view_records(update: Update, context: CallbackContext) -> None:
+    """
+    Handles the /list command to display the user's expenses and incomes.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - None
+    """
     logging.info('Command /list was triggered')
 
     user_id = context.user_data['user_id']
@@ -32,16 +42,32 @@ async def view_records(update: Update, context: CallbackContext) -> None:
 
     await update.message.reply_text(
         'Expenses:\n'
-        f'{("\n".join([f"{i + 1}. {expense}" for i, expense in enumerate(expenses)])) if len(expenses) > 0 else 'No records'}'
+        f'{
+            ("\n".join([f"{i + 1}. {expense}" for i, expense in enumerate(expenses)]))
+            if len(expenses) > 0 else 'No records'
+        }'
     )
     await update.message.reply_text(
         'Incomes:\n'
-        f'{("\n".join([f"{i + 1}. {income}" for i, income in enumerate(incomes)])) if len(incomes) > 0 else 'No records'}'
+        f'{
+            ("\n".join([f"{i + 1}. {income}" for i, income in enumerate(incomes)]))
+            if len(incomes) > 0 else 'No records'
+        }'
     )
 
 
 @user_exist_decorator
 async def get_filter(update: Update, context: CallbackContext) -> int:
+    """
+    Handles the /list_by_filter command to prompt the user to select a filter.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - int: The state value for conversation handler.
+    """
     logging.info('Command /list_by_filter was triggered')
     keyboard = [records_filter[:2], records_filter[2:]]
 
@@ -53,6 +79,16 @@ async def get_filter(update: Update, context: CallbackContext) -> int:
 
 @user_exist_decorator
 async def get_records_by_filter(update: Update, context: CallbackContext) -> int:
+    """
+    Handles the selected filter and prompts the user to choose a time period.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - int: The state value for conversation handler.
+    """
     logging.info(f'Filter {update.message.text} was selected')
 
     if update.message.text not in records_filter:
@@ -81,6 +117,16 @@ async def get_records_by_filter(update: Update, context: CallbackContext) -> int
 
 
 async def filter_by_date(update: Update, context: CallbackContext) -> int:
+    """
+    Filters records by date based on the selected filter.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - int: The state value for conversation handler.
+    """
     user_id = context.user_data['user_id']
     general_filter = context.user_data["filter"]
 
@@ -103,11 +149,17 @@ async def filter_by_date(update: Update, context: CallbackContext) -> int:
         case 'Date':
             await update.message.reply_text(
                 'Expenses:\n'
-                f'{("\n".join([f"{i + 1}. {expense}" for i, expense in enumerate(expenses)])) if len(expenses) > 0 else 'No records'}'
+                f'{
+                    ("\n".join([f"{i + 1}. {expense}" for i, expense in enumerate(expenses)]))
+                    if len(expenses) > 0 else 'No records'
+                }'
             )
             await update.message.reply_text(
                 'Incomes:\n'
-                f'{("\n".join([f"{i + 1}. {income}" for i, income in enumerate(incomes)])) if len(incomes) > 0 else 'No records'}',
+                f'{
+                    ("\n".join([f"{i + 1}. {income}" for i, income in enumerate(incomes)]))
+                    if len(incomes) > 0 else 'No records'
+                }',
                 reply_markup=ReplyKeyboardRemove()
             )
 
@@ -115,7 +167,10 @@ async def filter_by_date(update: Update, context: CallbackContext) -> int:
         case 'Expenses':
             await update.message.reply_text(
                 'Expenses:\n'
-                f'{("\n".join([f"{i + 1}. {expense}" for i, expense in enumerate(expenses)])) if len(expenses) > 0 else 'No records'}',
+                f'{
+                    ("\n".join([f"{i + 1}. {expense}" for i, expense in enumerate(expenses)]))
+                    if len(expenses) > 0 else 'No records'
+                }',
                 reply_markup=ReplyKeyboardRemove()
             )
 
@@ -123,7 +178,10 @@ async def filter_by_date(update: Update, context: CallbackContext) -> int:
         case 'Incomes':
             await update.message.reply_text(
                 'Incomes:\n'
-                f'{("\n".join([f"{i + 1}. {income}" for i, income in enumerate(incomes)])) if len(incomes) > 0 else 'No records'}',
+                f'{
+                    ("\n".join([f"{i + 1}. {income}" for i, income in enumerate(incomes)]))
+                    if len(incomes) > 0 else 'No records'
+                }',
                 reply_markup=ReplyKeyboardRemove()
             )
 
@@ -140,12 +198,30 @@ async def filter_by_date(update: Update, context: CallbackContext) -> int:
 
 @user_exist_decorator
 async def filter_by_category(update: Update, context: CallbackContext) -> int:
+    """
+    Filters records by category based on the selected filter and time period.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - int: The state value for conversation handler.
+    """
     logging.info(f'Filtering by category {update.message.text}')
     user_id = context.user_data['user_id']
     category = update.message.text.split()[0]
     filter_date = context.user_data['date_filter']
-    expenses = get_category_records_by_date(True, filter_date, users[user_id]['expenses'].get(category))
-    incomes = get_category_records_by_date( False, filter_date, users[user_id]['incomes'].get(category))
+    expenses = get_category_records_by_date(
+        True,
+        filter_date,
+        users[user_id]['expenses'].get(category)
+    )
+    incomes = get_category_records_by_date(
+        False,
+        filter_date,
+        users[user_id]['incomes'].get(category)
+    )
 
     await update.message.reply_text(
         'Expenses:\n'

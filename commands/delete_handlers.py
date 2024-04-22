@@ -24,6 +24,16 @@ from .text_handlers import user_exist_decorator
 
 @user_exist_decorator
 async def delete_record(update: Update, context: CallbackContext) -> int:
+    """
+    Handles the /delete_record command to initiate the deletion process.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - int: The state value for conversation handler.
+    """
     logging.info('Command /delete_record was triggered')
 
     reply_markup = [
@@ -41,6 +51,16 @@ async def delete_record(update: Update, context: CallbackContext) -> int:
 
 
 async def select_item(update: Update, context: CallbackContext) -> int:
+    """
+    Allows the user to select the type of record they want to delete.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - int: The state value for conversation handler.
+    """
     logging.info(f'Selected {update.message.text} option')
     user_id = context.user_data['user_id']
 
@@ -78,6 +98,16 @@ async def select_item(update: Update, context: CallbackContext) -> int:
 
 
 async def delete_item(update: Update, context: CallbackContext) -> int:
+    """
+    Deletes the selected record from the user's data.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - int: The state value for conversation handler.
+    """
     user_id = context.user_data['user_id']
     item_index = int(update.message.text) - 1
 

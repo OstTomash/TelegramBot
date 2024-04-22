@@ -21,6 +21,16 @@ from .text_handlers import user_exist_decorator
 
 @user_exist_decorator
 async def add_transaction(update: Update, context: CallbackContext) -> int:
+    """
+    Initiates the process of adding a new transaction.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The context object for the handler.
+
+    Returns:
+    - int: The next state in the conversation flow.
+    """
     logging.info(f'Command {update.message.text} was triggered')
     context.user_data['current_command'] = update.message.text
 
@@ -36,6 +46,16 @@ async def add_transaction(update: Update, context: CallbackContext) -> int:
 
 
 async def get_transaction(update: Update, context: CallbackContext) -> int:
+    """
+    Receives the chosen category for the transaction.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The context object for the handler.
+
+    Returns:
+    - int: The next state in the conversation flow.
+    """
     logging.info(f'Entered {update.message.text} category')
     user_id = context.user_data['user_id']
     category = update.message.text
@@ -63,22 +83,32 @@ async def get_transaction(update: Update, context: CallbackContext) -> int:
         )
 
         return await get_title(update, context)
-    else:
-        context.user_data['current_category'] = category.split()[0]
-        context.user_data['current_user'].create_expenses(context.user_data['current_category'])
-        users[user_id] = context.user_data['current_user'].__dict__
-        save_data(users)
 
-        await update.message.reply_text(
-            f'{category} category selected.\n'
-            'Enter the name of this action:',
-            reply_markup=ReplyKeyboardRemove()
-        )
+    context.user_data['current_category'] = category.split()[0]
+    context.user_data['current_user'].create_expenses(context.user_data['current_category'])
+    users[user_id] = context.user_data['current_user'].__dict__
+    save_data(users)
+
+    await update.message.reply_text(
+        f'{category} category selected.\n'
+        'Enter the name of this action:',
+        reply_markup=ReplyKeyboardRemove()
+    )
 
     return ASKING_TITLE
 
 
 async def get_title(update: Update, context: CallbackContext) -> int:
+    """
+    Receives the title/name for the transaction.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The context object for the handler.
+
+    Returns:
+    - int: The next state in the conversation flow.
+    """
     logging.info(f'Entered {update.message.text} value')
     title = update.message.text
 
@@ -87,7 +117,10 @@ async def get_title(update: Update, context: CallbackContext) -> int:
 
     await update.message.reply_text(
         'Now enter the amount '
-        f'{'you spent' if context.user_data['current_command'] == '/add_expense' else 'of your income'}:'
+        f'{
+            'you spent' if context.user_data['current_command'] == '/add_expense'
+            else 'of your income'
+        }:'
     )
 
     logging.info(f'Title {title} was entered')
@@ -96,6 +129,16 @@ async def get_title(update: Update, context: CallbackContext) -> int:
 
 
 async def get_price(update: Update, context: CallbackContext) -> int:
+    """
+    Receives the price/amount for the transaction.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The context object for the handler.
+
+    Returns:
+    - int: The next state in the conversation flow.
+    """
     logging.info(f'Entered {update.message.text} value')
 
     try:
@@ -111,21 +154,31 @@ async def get_price(update: Update, context: CallbackContext) -> int:
         )
 
         return ASKING_PRICE
-    else:
-        context.user_data['amount'] = price
 
-        await update.message.reply_text(
-            'Great! Now, please, write the date when the action was made in YYYY-MM-DD format.\n'
-            'If you don\'t need it, just write "No".\n'
-            'We will add today`s date.'
-        )
+    context.user_data['amount'] = price
 
-        logging.info(f'Price {price} was entered')
+    await update.message.reply_text(
+        'Great! Now, please, write the date when the action was made in YYYY-MM-DD format.\n'
+        'If you don\'t need it, just write "No".\n'
+        'We will add today`s date.'
+    )
 
-        return ASKING_DATE
+    logging.info(f'Price {price} was entered')
+
+    return ASKING_DATE
 
 
 async def get_date(update: Update, context: CallbackContext) -> int:
+    """
+    Receives the date for the transaction.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The context object for the handler.
+
+    Returns:
+    - int: The next state in the conversation flow.
+    """
     user_id = context.user_data['user_id']
     date = update.message.text
 

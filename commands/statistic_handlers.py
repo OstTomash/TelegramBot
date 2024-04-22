@@ -26,11 +26,21 @@ from utils import (
     get_amounts_by_category,
 )
 from .text_handlers import user_exist_decorator
-from .build_chart import build_chart, show_image
+from .build_chart import show_image
 
 
 @user_exist_decorator
 async def get_data_for_stat(update: Update, context: CallbackContext) -> int:
+    """
+    Prompts the user to select the type of statistics they want to view.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - int: The state value for conversation handler.
+    """
     logging.info(f'Command {update.message.text} was triggered')
 
     keyword_markup = [stat_filter]
@@ -46,6 +56,16 @@ async def get_data_for_stat(update: Update, context: CallbackContext) -> int:
 
 
 async def get_filter_for_stat(update: Update, context: CallbackContext) -> int:
+    """
+    Handles the selected type of statistics and prompts the user to choose a filter.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - int: The state value for conversation handler.
+    """
     logging.info(f'Entered {update.message.text} at get_data_for_stat func')
 
     if update.message.text not in stat_filter:
@@ -72,21 +92,33 @@ async def get_filter_for_stat(update: Update, context: CallbackContext) -> int:
         )
 
         return SPECIFIC_FILTER
-    else:
-        await update.message.reply_text(
-            f'Great! You choose {update.message.text}.'
-            'Enter the beginning and end of the period in the format:\n'
-            'YYYY-MM-DD - YYYY-MM-DD (example 2024-01-01 - 2024-01-31)\n',
-            reply_markup=ReplyKeyboardRemove()
-        )
-        context.user_data['specific_stat_filter'] = DATE
-        return SHOW_STATISTIC
+
+    await update.message.reply_text(
+        f'Great! You choose {update.message.text}.'
+        'Enter the beginning and end of the period in the format:\n'
+        'YYYY-MM-DD - YYYY-MM-DD (example 2024-01-01 - 2024-01-31)\n',
+        reply_markup=ReplyKeyboardRemove()
+    )
+    context.user_data['specific_stat_filter'] = DATE
+    return SHOW_STATISTIC
 
 
 async def get_filter_date(update: Update, context: CallbackContext) -> int:
-    logging.info(f'Entered {update.message.text} at get_filter_for_stat func')
+    """
+    Handles the selected filter and prompts the user to enter the date range.
 
-    if update.message.text not in transaction_filter and context.user_data['general_stat_filter'] == GENERAL:
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - int: The state value for conversation handler.
+    """
+    logging.info(f'Entered {update.message.text} at get_filter_for_stat func')
+    is_filter = update.message.text not in transaction_filter
+    is_general = context.user_data['general_stat_filter'] == GENERAL
+
+    if is_filter and is_general:
         keyboard = [transaction_filter]
         markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
 
@@ -118,6 +150,16 @@ async def get_filter_date(update: Update, context: CallbackContext) -> int:
 
 
 async def show_statistics(update: Update, context: CallbackContext) -> int:
+    """
+    Shows the statistics based on the selected filter and date range.
+
+    Args:
+    - update (Update): The update object from Telegram.
+    - context (CallbackContext): The callback context.
+
+    Returns:
+    - int: The state value for conversation handler.
+    """
     logging.info(f'Entered {update.message.text} at get_filter_date func')
     user_id = context.user_data['user_id']
     general_filter = context.user_data['general_stat_filter']
@@ -141,7 +183,9 @@ async def show_statistics(update: Update, context: CallbackContext) -> int:
         else:
             transactions = data[general_filter.lower()]
             labels = list(transactions.keys())
-            list_of_category_amounts = [sum(item['amount'] for item in items) for items in transactions.values()]
+            list_of_category_amounts = [
+                sum(item['amount'] for item in items) for items in transactions.values()
+            ]
 
             await show_image(update, labels, list_of_category_amounts, general_filter)
 
