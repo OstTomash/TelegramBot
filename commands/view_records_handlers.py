@@ -26,7 +26,7 @@ from .text_handlers import user_exist_decorator
 async def view_records(update: Update, context: CallbackContext) -> None:
     logging.info('Command /list was triggered')
 
-    user_id = str(update.message.from_user.id)
+    user_id = context.user_data['user_id']
     expenses = get_transaction_list(users[user_id]['expenses'], True)
     incomes = get_transaction_list(users[user_id]['incomes'], False)
 
@@ -81,7 +81,7 @@ async def get_records_by_filter(update: Update, context: CallbackContext) -> int
 
 
 async def filter_by_date(update: Update, context: CallbackContext) -> int:
-    user_id = str(update.message.from_user.id)
+    user_id = context.user_data['user_id']
     general_filter = context.user_data["filter"]
 
     if update.message.text not in date_filter:
@@ -141,7 +141,7 @@ async def filter_by_date(update: Update, context: CallbackContext) -> int:
 @user_exist_decorator
 async def filter_by_category(update: Update, context: CallbackContext) -> int:
     logging.info(f'Filtering by category {update.message.text}')
-    user_id = str(update.message.from_user.id)
+    user_id = context.user_data['user_id']
     category = update.message.text.split()[0]
     filter_date = context.user_data['date_filter']
     expenses = get_category_records_by_date(True, filter_date, users[user_id]['expenses'].get(category))

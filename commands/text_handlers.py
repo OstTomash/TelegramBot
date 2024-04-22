@@ -14,6 +14,7 @@ def user_exist_decorator(func):
     async def wrapper(update: Update, context: CallbackContext, *args, **kwargs):
         user_id = str(update.message.from_user.id)
         user_name = update.message.from_user.first_name
+        context.user_data['user_id'] = user_id
 
         if user_id not in users:
             user = User(user_name)

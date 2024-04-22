@@ -119,7 +119,7 @@ async def get_filter_date(update: Update, context: CallbackContext) -> int:
 
 async def show_statistics(update: Update, context: CallbackContext) -> int:
     logging.info(f'Entered {update.message.text} at get_filter_date func')
-    user_id = str(update.message.from_user.id)
+    user_id = context.user_data['user_id']
     general_filter = context.user_data['general_stat_filter']
     specific_filter = context.user_data.get('specific_stat_filter')
     data = users[user_id]

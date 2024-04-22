@@ -40,7 +40,7 @@ async def delete_record(update: Update, context: CallbackContext) -> int:
 
 async def select_item(update: Update, context: CallbackContext) -> int:
     logging.info(f'Selected {update.message.text} option')
-    user_id = str(update.message.from_user.id)
+    user_id = context.user_data['user_id']
 
     if update.message.text not in delete_filter:
         keyboard = [delete_filter]
@@ -76,7 +76,7 @@ async def select_item(update: Update, context: CallbackContext) -> int:
 
 
 async def delete_item(update: Update, context: CallbackContext) -> int:
-    user_id = str(update.message.from_user.id)
+    user_id = context.user_data['user_id']
     item_index = int(update.message.text) - 1
 
     if item_index <= 0 or item_index > len(context.user_data['all_transactions']) - 1:

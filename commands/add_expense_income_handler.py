@@ -37,7 +37,7 @@ async def add_transaction(update: Update, context: CallbackContext) -> int:
 
 async def get_transaction(update: Update, context: CallbackContext) -> int:
     logging.info(f'Entered {update.message.text} category')
-    user_id = str(update.message.from_user.id)
+    user_id = context.user_data['user_id']
     category = update.message.text
     reply_keyboard = [categories[i:i + 3] for i in range(0, len(categories), 3)]
 
@@ -128,7 +128,7 @@ async def get_price(update: Update, context: CallbackContext) -> int:
 
 
 async def get_date(update: Update, context: CallbackContext) -> int:
-    user_id = str(update.message.from_user.id)
+    user_id = context.user_data['user_id']
     date = update.message.text
 
     if date.lower() != 'no' and not is_valid_date(date):
