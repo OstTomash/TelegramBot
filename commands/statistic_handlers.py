@@ -26,7 +26,7 @@ from utils import (
     get_amounts_by_category,
 )
 from .text_handlers import user_exist_decorator
-from .build_chart import build_chart
+from .build_chart import build_chart, show_image
 
 
 @user_exist_decorator
@@ -59,8 +59,9 @@ async def get_filter_for_stat(update: Update, context: CallbackContext) -> int:
 
         return STAT_FILTER
 
+    context.user_data['general_stat_filter'] = update.message.text
+
     if update.message.text == GENERAL:
-        context.user_data['general_stat_filter'] = update.message.text
         keyboard = [transaction_filter]
         markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
 
@@ -72,7 +73,6 @@ async def get_filter_for_stat(update: Update, context: CallbackContext) -> int:
 
         return SPECIFIC_FILTER
     else:
-        context.user_data['general_stat_filter'] = update.message.text
         await update.message.reply_text(
             f'Great! You choose {update.message.text}.'
             'Enter the beginning and end of the period in the format:\n'
@@ -132,23 +132,18 @@ async def show_statistics(update: Update, context: CallbackContext) -> int:
         return SHOW_STATISTIC
 
     if update.message.text.lower() == 'no' and specific_filter == CATEGORY:
-
         if general_filter == GENERAL:
             labels = [EXPENSES, INCOMES]
             amount_expenses = get_general_amount(data[EXPENSES.lower()])
             amount_incomes = get_general_amount(data[INCOMES.lower()])
 
-            stat_image = build_chart(labels, [amount_expenses, amount_incomes], GENERAL)
-
-            await update.message.reply_photo(stat_image)
+            await show_image(update, labels, [amount_expenses, amount_incomes], GENERAL)
         else:
             transactions = data[general_filter.lower()]
             labels = list(transactions.keys())
             list_of_category_amounts = [sum(item['amount'] for item in items) for items in transactions.values()]
 
-            stat_image = build_chart(labels, list_of_category_amounts, general_filter)
-
-            await update.message.reply_photo(stat_image)
+            await show_image(update, labels, list_of_category_amounts, general_filter)
 
         return ConversationHandler.END
 
@@ -166,8 +161,7 @@ async def show_statistics(update: Update, context: CallbackContext) -> int:
         amount_expenses = get_general_amount(data[EXPENSES.lower()], (start_date, end_date))
         amount_incomes = get_general_amount(data[INCOMES.lower()], (start_date, end_date))
 
-        stat_image = build_chart(labels, [amount_expenses, amount_incomes], GENERAL)
-        await update.message.reply_photo(stat_image)
+        await show_image(update, labels, [amount_expenses, amount_incomes], GENERAL)
     elif general_filter == GENERAL and specific_filter == CATEGORY:
         expenses = data[EXPENSES.lower()]
         incomes = data[INCOMES.lower()]
@@ -178,14 +172,12 @@ async def show_statistics(update: Update, context: CallbackContext) -> int:
         labels.extend(incomes_labels)
         amounts_by_category.extend(amounts_by_category_incomes)
 
-        stat_image = build_chart(labels, amounts_by_category, GENERAL)
-        await update.message.reply_photo(stat_image)
+        await show_image(update, labels, amounts_by_category, GENERAL)
     elif specific_filter == DATE:
         transactions = data[general_filter.lower()]
         labels = list(transactions.keys())
         amounts_by_category = get_amounts_by_category(transactions, start_date, end_date)
 
-        stat_image = build_chart(labels, amounts_by_category, general_filter)
-        await update.message.reply_photo(stat_image)
+        await show_image(update, labels, amounts_by_category, general_filter)
 
     return ConversationHandler.END
