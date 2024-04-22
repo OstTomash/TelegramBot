@@ -14,6 +14,18 @@
                     "title": "Dishwasher",
                     "amount": 2352.0,
                     "date": "2024-03-15"
+                },
+                {
+                    "category": "Home",
+                    "title": "Kettle",
+                    "amount": 65.0,
+                    "date": "2024-04-22"
+                },
+                {
+                    "category": "Home",
+                    "title": "Brush",
+                    "amount": 150.0,
+                    "date": "2024-03-24"
                 }
             ],
             "Utilities": [
@@ -23,6 +35,14 @@
                     "amount": 850.0,
                     "date": "2024-04-20"
                 }
+            ],
+            "Health": [
+                {
+                    "category": "Health",
+                    "title": "Drugs",
+                    "amount": 650.0,
+                    "date": "2024-03-24"
+                }
             ]
         },
         "incomes": {
@@ -31,11 +51,6 @@
                     "category": "Work",
                     "amount": 42500.0,
                     "date": "2024-04-06"
-                },
-                {
-                    "category": "Work",
-                    "amount": 42500.0,
-                    "date": "2023-03-06"
                 }
             ],
             "Invest": [

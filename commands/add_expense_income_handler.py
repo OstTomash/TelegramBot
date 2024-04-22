@@ -51,7 +51,8 @@ async def get_transaction(update: Update, context: CallbackContext) -> int:
         )
 
         return ASKING_CATEGORY
-    elif context.user_data['current_command'] == '/add_income':
+
+    if context.user_data['current_command'] == '/add_income':
         context.user_data['current_category'] = category
         context.user_data['current_user'].create_incomes(context.user_data['current_category'])
         users[user_id] = context.user_data['current_user'].__dict__
@@ -73,8 +74,6 @@ async def get_transaction(update: Update, context: CallbackContext) -> int:
             'Enter the name of this action:',
             reply_markup=ReplyKeyboardRemove()
         )
-
-    logging.info(f'Category {category} was entered')
 
     return ASKING_TITLE
 
@@ -98,7 +97,6 @@ async def get_title(update: Update, context: CallbackContext) -> int:
 
 async def get_price(update: Update, context: CallbackContext) -> int:
     logging.info(f'Entered {update.message.text} value')
-    price = update.message.text
 
     try:
         price = float(update.message.text)

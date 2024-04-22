@@ -1,5 +1,8 @@
 import json
+import logging
 from datetime import datetime, date, timedelta
+
+from constants import users
 
 
 def save_data(data: dict) -> None:
@@ -38,7 +41,7 @@ def get_items_list(items: list, is_expense: bool) -> list:
 
 def get_records_by_date(items: list, date_filter: str) -> list:
     today = date.today()
-    filtered_records = []
+    filtered_records = list()
     start_date = None
     end_date = None
 
@@ -48,16 +51,15 @@ def get_records_by_date(items: list, date_filter: str) -> list:
         match date_filter:
             case 'Week':
                 start_date = today - timedelta(days=today.weekday())
-                end_date = start_date + timedelta(days=6)
+                end_date = start_date - timedelta(days=6)
             case 'Month':
-                start_date = today.replace(day=1)
-                next_month = today.replace(day=28) + timedelta(days=4)
-                end_date = next_month - timedelta(days=next_month.day)
+                start_date = today - timedelta(days=today.weekday())
+                end_date = today.replace(month=today.month - 1)
             case 'Year':
-                start_date = today.replace(month=1, day=1)
-                end_date = today.replace(month=12, day=31)
+                start_date = today - timedelta(days=today.weekday())
+                end_date = today - timedelta(days=365)
 
-        if start_date <= item_date.date() <= end_date:
+        if start_date >= item_date.date() >= end_date:
             filtered_records.append(item)
 
     return filtered_records
@@ -68,7 +70,7 @@ def get_transaction_list(transaction: dict, is_expense: bool, date_filter=None) 
 
     if date_filter:
         for _, items in transaction.items():
-            filtered_records = get_records_by_date(items, date_filter)
+            filtered_records.extend(get_records_by_date(items, date_filter))
     else:
         filtered_records = [item for sublist in transaction.values() for item in sublist]
 
@@ -123,3 +125,15 @@ def get_amounts_by_category(records: dict, start_date: str, end_date: str) -> li
         amounts_by_category.append(int(total_amount))
 
     return amounts_by_category
+
+
+def delete_record_from_data(chosen_record: dict, user_id: str, record_type: str, category: str) -> None:
+    for i, record in enumerate(users[user_id][record_type][category]):
+        if id(chosen_record) == id(record):
+            if len(users[user_id][record_type][category]) <= 1:
+                del users[user_id][record_type][category]
+            else:
+                del users[user_id][record_type][category][i]
+                break
+
+    save_data(users)

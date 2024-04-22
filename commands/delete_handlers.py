@@ -1,5 +1,4 @@
 import logging
-
 from telegram import (
     Update,
     ReplyKeyboardMarkup,
@@ -10,7 +9,10 @@ from telegram.ext import (
     ConversationHandler,
 )
 
-from utils import get_items_list, save_data
+from utils import (
+    get_items_list,
+    delete_record_from_data,
+)
 from constants import (
     users,
     delete_filter,
@@ -90,15 +92,7 @@ async def delete_item(update: Update, context: CallbackContext) -> int:
     record_category = chosen_record['category']
     record_type = context.user_data['record_type']
 
-    for i, record in enumerate(users[user_id][record_type][record_category]):
-        if id(chosen_record) == id(record):
-            if len(users[user_id][record_type][record_category]) <= 1:
-                del users[user_id][record_type][record_category]
-            else:
-                del users[user_id][record_type][record_category][i]
-                break
-
-    save_data(users)
+    delete_record_from_data(chosen_record, user_id, record_type, record_category)
 
     await update.message.reply_text(
         f'Your record number {item_index + 1} has been deleted.'

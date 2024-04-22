@@ -96,8 +96,8 @@ async def filter_by_date(update: Update, context: CallbackContext) -> int:
         return DATE_FILTER
 
     context.user_data['date_filter'] = update.message.text
-    expenses = get_transaction_list(users[user_id]['expenses'], True, context.user_data['date_filter'])
-    incomes = get_transaction_list(users[user_id]['incomes'], False, context.user_data['date_filter'])
+    expenses = get_transaction_list(users[user_id]['expenses'], True, update.message.text)
+    incomes = get_transaction_list(users[user_id]['incomes'], False, update.message.text)
 
     match general_filter:
         case 'Date':

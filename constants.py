@@ -48,6 +48,7 @@ transaction_filter = [CATEGORY, DATE]
 
 # List of available commands
 commands = [
+    'Start: /start',
     'List of categories: /categories',
     'List of commands: /help',
     'Add expense: /add_expense',
